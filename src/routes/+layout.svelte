@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { SpotifyService } from '$lib/spotify/spotify-service';
 	import { onMount } from 'svelte';
 
-	onMount(() => {});
+	onMount(() => {
+		SpotifyService.init();
+	});
 </script>
 
 <header>
