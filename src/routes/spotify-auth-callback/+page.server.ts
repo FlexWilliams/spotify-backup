@@ -1,3 +1,4 @@
+import { PUBLIC_SPOTIFY_REDIRECT_URI } from '$env/static/public';
 import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import type { SpotifyAuthResponse } from '$lib/spotify';
 
@@ -8,7 +9,7 @@ export async function load({ fetch, url }) {
 	const state = url.searchParams.get('state');
 
 	const code = url.searchParams.get('code');
-	const redirect_uri = 'http://localhost:5173/spotify-auth-callback';
+	const redirect_uri = PUBLIC_SPOTIFY_REDIRECT_URI;
 
 	if (!state || !code) {
 		throw Error(`Received invalid state or code after spotify auth redirect!`);

@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { PUBLIC_SPOTIFY_REDIRECT_URI } from '$env/static/public';
 	import { onMount } from 'svelte';
 
 	const client_id = '35d2f05f0f9742a9bd7dd4f383a30b7d';
-	const redirect_uri = encodeURI('http://localhost:5173/spotify-auth-callback');
+	const redirect_uri = encodeURI(PUBLIC_SPOTIFY_REDIRECT_URI);
 
 	onMount(() => {});
 
