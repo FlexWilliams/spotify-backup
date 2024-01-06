@@ -60,6 +60,9 @@ export class SpotifyService {
 	 * Can also user this API (current user) instead of by user id, but id more flexible:
 	 * https://developer.spotify.com/documentation/web-api/reference/get-a-list-of-current-users-playlists
 	 *
+	 * TODO: implement rate limiting fallback,
+	 * See: https://developer.spotify.com/documentation/web-api/concepts/rate-limits
+	 *
 	 * @param userId The id of the user to get playlists for
 	 */
 	public static async getUserPlaylists(

@@ -6,23 +6,31 @@
 		type SpotifyBackupPlaylistTrack,
 		type SpotifyBackupUserPlaylists
 	} from '$lib';
+	import ProgressBar from '$lib/ui/components/ProgressBar.svelte';
 	import * as localForage from 'localforage';
 	import { onMount } from 'svelte';
 
 	export let data;
 	const { spotifyAuthResponse } = data;
 
-	let fetchedPlaylists = false;
+	let doneFetchingPlaylists = false;
 
 	let spotifyBackupUserPlaylists = {
 		userId: '',
 		playlists: []
 	} as SpotifyBackupUserPlaylists;
 
+	let totalPlaylists = 0;
+	$: _totalPlaylists = totalPlaylists;
+
+	let fetchedPlaylists = 0;
+	$: _fetchedPlaylists = fetchedPlaylists;
+
 	async function fetchUserPlaylists(userId: string): Promise<SpotifyBackupUserPlaylists> {
 		const userPlaylists = await SpotifyService.getUserPlaylists(userId);
 
 		spotifyBackupUserPlaylists.userId = userId;
+		totalPlaylists = userPlaylists.total || 0;
 
 		return new Promise(async (resolve) => {
 			if (!userPlaylists.items) {
@@ -52,10 +60,12 @@
 							}) as SpotifyBackupPlaylistTrack
 					)
 				} as SpotifyBackupPlaylist);
+
+				fetchedPlaylists++;
 			}
 
 			console.debug(`Fetched playlists!`);
-			fetchedPlaylists = true;
+			doneFetchingPlaylists = true;
 			return resolve(spotifyBackupUserPlaylists);
 		});
 	}
@@ -80,13 +90,8 @@
 </script>
 
 <section class="export-playlists">
-	<p
-		class="export-playlists__loading-indicator"
-		class:export-playlists__loading-indicator--loading={!fetchedPlaylists}
-	>
-		Fetching Your Playlists...
-	</p>
-	<button type="button" on:click={() => downloadPlaylistExport()} disabled={!fetchedPlaylists}
+	<ProgressBar totalPlaylists={_totalPlaylists} fetchedPlaylists={_fetchedPlaylists} />
+	<button type="button" on:click={() => downloadPlaylistExport()} disabled={!doneFetchingPlaylists}
 		>Download Playlists Export (.json)</button
 	>
 </section>
@@ -98,14 +103,6 @@
 		align-items: center;
 	}
 
-	.export-playlists__loading-indicator {
-		display: none;
-	}
-
-	.export-playlists__loading-indicator--loading {
-		display: initial;
-	}
-
 	button {
 		height: 40px;
 		width: 250px;
@@ -115,6 +112,7 @@
 		color: white;
 		font-weight: bold;
 		cursor: pointer;
+		margin-top: 16px;
 
 		&:disabled {
 			background-color: gray;
