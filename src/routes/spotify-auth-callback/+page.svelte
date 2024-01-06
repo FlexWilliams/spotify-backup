@@ -62,10 +62,11 @@
 
 	function downloadPlaylistExport(): void {
 		const content = JSON.stringify(spotifyBackupUserPlaylists, null, 2);
+		const date = new Date().toLocaleDateString().replace(/\//g, '-');
 		var a = document.createElement('a');
 		var file = new Blob([content], { type: 'application/json' });
 		a.href = URL.createObjectURL(file);
-		a.download = `spotify-backup.json`;
+		a.download = `${spotifyBackupUserPlaylists.userId}_spotify-backup_${date}.json`;
 		a.click();
 	}
 
