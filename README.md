@@ -23,8 +23,8 @@ pnpm install
 NOTE: You need to set the following environment variables within a dotenv file [svelte](https://learn.svelte.dev/tutorial/env-static-private) & [vite](https://vitejs.dev/guide/env-and-mode.html#env-files) :
 
 ```
-SPOTIFY_CLIENT_ID=
 SPOTIFY_CLIENT_SECRET=
+PUBLIC_SPOTIFY_CLIENT_ID=
 PUBLIC_SPOTIFY_REDIRECT_URI=
 ```
 
