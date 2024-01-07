@@ -17,12 +17,14 @@
 
 <style lang="scss">
 	header {
+		height: 80px;
 		display: flex;
 		justify-content: center;
 		box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
 	}
 
 	main {
+		height: calc(100% - 80px - 64px);
 		padding: 32px;
 		display: flex;
 		flex-direction: column;

@@ -1,13 +1,12 @@
-import { PUBLIC_SPOTIFY_REDIRECT_URI } from '$env/static/public';
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from '$env/static/private';
+import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
+import { PUBLIC_SPOTIFY_CLIENT_ID, PUBLIC_SPOTIFY_REDIRECT_URI } from '$env/static/public';
 import type { SpotifyAuthResponse } from '$lib/spotify';
+import { AUTH_STATE_KEY } from '$lib/storage';
+import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ fetch, url }) {
-	// TODO: `state` validation (security flaw)!!
-	// See: https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.1
+export async function load({ fetch, url, cookies }) {
 	const state = url.searchParams.get('state');
-
 	const code = url.searchParams.get('code');
 	const redirect_uri = PUBLIC_SPOTIFY_REDIRECT_URI;
 
@@ -15,12 +14,22 @@ export async function load({ fetch, url }) {
 		throw Error(`Received invalid state or code after spotify auth redirect!`);
 	}
 
+	const authState = cookies.get(AUTH_STATE_KEY);
+	console.log(`\nAuth\nSent: ${authState}, Recieved: ${state}\n`);
+	if (authState !== state) {
+		throw error(
+			500,
+			`There was a auth state code mismatch from the Spotify auth!\n Sent: ${authState}, Recieved: ${state}`
+		);
+	} else {
+		cookies.delete(AUTH_STATE_KEY, { path: '/' }); // Auth passed, cookie no longer needed ;)
+	}
+
 	const formData = `code=${encodeURIComponent(code)}&redirect_uri=${encodeURIComponent(
 		redirect_uri
 	)}&grant_type=authorization_code`;
 
-	// TODO: ensure this is only accessible via svelte backend
-	const bearerToken = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString(
+	const bearerToken = Buffer.from(`${PUBLIC_SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString(
 		'base64'
 	);
 

@@ -1,29 +1,23 @@
 <script lang="ts">
-	import { PUBLIC_SPOTIFY_REDIRECT_URI } from '$env/static/public';
-	import { onMount } from 'svelte';
+	import { PUBLIC_SPOTIFY_CLIENT_ID, PUBLIC_SPOTIFY_REDIRECT_URI } from '$env/static/public';
 
-	const client_id = '35d2f05f0f9742a9bd7dd4f383a30b7d';
+	export let data;
+	const { stateCode } = data;
+
+	const client_id = PUBLIC_SPOTIFY_CLIENT_ID;
 	const redirect_uri = encodeURI(PUBLIC_SPOTIFY_REDIRECT_URI);
 
-	onMount(() => {});
-
-	function getStateCode(): string {
-		const min = Math.ceil(9999999);
-		const max = Math.floor(99999999);
-
-		const val = Math.floor(Math.random() * (max - min + 1) + min);
-		return `${val}`;
-	}
-	function loginWithSPotify(): void {
-		const state = getStateCode();
+	function loginWithSpotify(): void {
+		const state = stateCode;
 		const scope = 'playlist-read-private';
-		const redirectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${scope}&redirect_uri=${redirect_uri}&state=${state}`;
+		const urlParams = `response_type=code&client_id=${client_id}&scope=${scope}&redirect_uri=${redirect_uri}&state=${state}`;
+		const redirectUrl = `https://accounts.spotify.com/authorize?${urlParams}`;
 
 		window.location.href = redirectUrl;
 	}
 </script>
 
-<button type="button" on:click={() => loginWithSPotify()}>Login with Spotify</button>
+<button type="button" on:click={() => loginWithSpotify()}>Login with Spotify</button>
 
 <style lang="scss">
 	button {
