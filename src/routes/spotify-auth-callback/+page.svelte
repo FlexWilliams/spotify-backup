@@ -1,14 +1,14 @@
 <script lang="ts">
 	import {
 		SpotifyService,
+		spotifyTrackToBackupTrack,
 		type SpotifyAuthResponse,
-		type SpotifyBackupPlaylist,
-		type SpotifyBackupPlaylistTrack,
 		type SpotifyBackupUserPlaylists,
 		type SpotifyUserPlaylists,
 		type SpotifyUserPlaylistsResponse,
 		type SpotifyUserProfile
 	} from '$lib';
+	import UserPlaylists from '$lib/playlists/UserPlaylists.svelte';
 	import * as localForage from 'localforage';
 	import { onMount } from 'svelte';
 
@@ -19,6 +19,7 @@
 	let doneExportingUserPlaylists = false;
 	let exportingPlaylists = false;
 	let totalPlaylists = 0;
+	let totalPlaylistsSelected = 0;
 	let userProfile: SpotifyUserProfile;
 	let userPlaylists: Partial<SpotifyUserPlaylistsResponse>;
 
@@ -28,10 +29,9 @@
 	} as SpotifyBackupUserPlaylists;
 
 	async function exportAllPlaylists(
-		userId: string,
 		playlists?: SpotifyUserPlaylists[]
 	): Promise<SpotifyBackupUserPlaylists> {
-		spotifyBackupUserPlaylists.userId = userId;
+		spotifyBackupUserPlaylists.userId = userProfile.id;
 		doneExportingUserPlaylists = false;
 		exportingPlaylists = true;
 
@@ -51,20 +51,10 @@
 				spotifyBackupUserPlaylists.playlists.push({
 					id: item.id,
 					name: item.name,
-					tracks: userPlaylistItems.items?.map(
-						(i) =>
-							({
-								name: i?.track?.name,
-								album: i?.track?.album?.name,
-								artists: i?.track?.artists
-									? i.track.artists
-											.map((a) => a.name)
-											.join(', ')
-											.trim()
-									: []
-							}) as SpotifyBackupPlaylistTrack
-					)
-				} as SpotifyBackupPlaylist);
+					tracks: userPlaylistItems.items
+						? userPlaylistItems.items.map((item) => spotifyTrackToBackupTrack(item))
+						: []
+				});
 			}
 
 			console.debug(`Fetched playlists!`);
@@ -73,6 +63,22 @@
 			doneExportingUserPlaylists = true;
 			return resolve(spotifyBackupUserPlaylists);
 		});
+	}
+
+	async function exportSelectedPlaylists(selectedPlaylistIds: string[]): Promise<void> {
+		if (!selectedPlaylistIds) {
+			return;
+		}
+
+		const selectedPlaylists = userPlaylists.items?.filter(
+			(i) => selectedPlaylistIds.indexOf(i.id) > -1
+		);
+		await exportAllPlaylists(selectedPlaylists);
+	}
+
+	function resetExportQueue(playlistsSelected: number): void {
+		totalPlaylistsSelected = playlistsSelected;
+		doneExportingUserPlaylists = false;
 	}
 
 	function downloadPlaylistExport(): void {
@@ -95,7 +101,7 @@
 	});
 </script>
 
-<section class="export-playlists">
+<section class="spotify-playlists-export">
 	{#if !doneFetchingUserPlaylists}
 		<p
 			class="export-playlists__loading-indicator"
@@ -104,73 +110,28 @@
 			Fetching number of playlists...
 		</p>
 	{:else}
-		<!-- TODO: make into component (for specific playlist selection and export)-->
-		<section class="user-playlists">
-			<p class="user-playlists__playlist-count">
-				Total Playlists: <span>{totalPlaylists}</span>
-			</p>
-
-			{#if doneExportingUserPlaylists}
-				<button type="button" on:click={() => downloadPlaylistExport()}
-					>Download Playlists Export (.json)</button
-				>
-			{:else}
-				{#if exportingPlaylists}
-					<p>Exporting playlists from Spotify...</p>
-				{/if}
-				<button
-					type="button"
-					on:click={() => exportAllPlaylists(userProfile.id, userPlaylists.items)}
-					disabled={exportingPlaylists}>Export All Playlists</button
-				>
-			{/if}
-		</section>
+		<UserPlaylists
+			{totalPlaylists}
+			{totalPlaylistsSelected}
+			playlists={userPlaylists.items || []}
+			{doneExportingUserPlaylists}
+			{exportingPlaylists}
+			on:exportAllPlaylists={() => exportAllPlaylists(userPlaylists.items)}
+			on:exportSelectedPlaylists={(event) => exportSelectedPlaylists(event.detail)}
+			on:downloadPlaylistExport={() => downloadPlaylistExport()}
+			on:resetExportQueue={(event) => resetExportQueue(event.detail)}
+		/>
 	{/if}
 </section>
 
 <style lang="scss">
-	.export-playlists {
+	.spotify-playlists-export {
 		display: flex;
 		flex-direction: column;
+		height: 100%;
 		align-items: center;
-	}
-
-	.export-playlists__loading-indicator {
 		font-size: 1.5em;
-		display: none;
-	}
-
-	.export-playlists__loading-indicator--loading {
-		display: initial;
-	}
-
-	.user-playlists {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	.user-playlists__playlist-count {
-		font-size: 1.5em;
-
-		span {
-			font-weight: bold;
-		}
-	}
-
-	button {
-		height: 40px;
-		width: 250px;
-		background-color: #1db954; // TODO: add to color map
-		border: none;
-		border-radius: 24px;
-		color: white;
 		font-weight: bold;
-		cursor: pointer;
-
-		&:disabled {
-			background-color: gray;
-			cursor: not-allowed;
-		}
+		width: 100%;
 	}
 </style>

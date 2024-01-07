@@ -1,0 +1,15 @@
+@mixin button {
+	height: 40px;
+	width: 250px;
+	background-color: #1db954; // TODO: add to color map
+	border: none;
+	border-radius: 24px;
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+
+	&:disabled {
+		background-color: gray;
+		cursor: not-allowed;
+	}
+}
