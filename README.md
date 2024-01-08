@@ -9,6 +9,7 @@
 ### Currently supports exporting:
 
 1. User Playlists (All)
+2. User Playlists (Explicit Selection)
 
 ### Development
 
