@@ -15,11 +15,10 @@ export async function load({ fetch, url, cookies }) {
 	}
 
 	const authState = cookies.get(AUTH_STATE_KEY);
-	console.log(`\nAuth\nSent: ${authState}, Recieved: ${state}\n`);
 	if (authState !== state) {
 		throw error(
 			500,
-			`There was a auth state code mismatch from the Spotify auth!\n Sent: ${authState}, Recieved: ${state}`
+			`There was an auth state code mismatch from the Spotify auth!\n Sent: ${authState}, Received: ${state}`
 		);
 	} else {
 		cookies.delete(AUTH_STATE_KEY, { path: '/' }); // Auth passed, cookie no longer needed ;)
