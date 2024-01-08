@@ -11,6 +11,44 @@
 1. User Playlists (All)
 2. User Playlists (Explicit Selection)
 
+### Sample playlist export (.json)
+
+```json
+{
+  "userId": "github_user",
+  "playlists": [
+    {
+      "id": "5Z4XPHaCVo3HbXc29s2nL7",
+      "name": "House hop",
+      "tracks": [
+        {
+          "name": "Consequence",
+          "album": "The Crusade",
+          "artists": "TEK.LUN"
+        },
+        {
+          "name": "2018",
+          "album": "2018",
+          "artists": "Singularis"
+        }
+      ]
+    },
+    {
+      "id": "3SwrJFECZ4SxA1RLZWE7fd",
+      "name": "Poddys",
+      "tracks": [
+        {
+          "name": "Charge Your Battery",
+          "album": "Awakening OD",
+          "artists": "Awakening OD"
+        }
+      ]
+    }
+    ...
+  ]
+}
+```
+
 ### Development
 
 #### Installing
