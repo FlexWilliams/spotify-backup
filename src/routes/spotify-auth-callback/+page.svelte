@@ -92,7 +92,6 @@
 	}
 
 	onMount(async () => {
-		// TODO: get this server side, don't exposes token client side if possible
 		await localForage.setItem<SpotifyAuthResponse>('spotify_auth_response', spotifyAuthResponse);
 		userProfile = await SpotifyService.getUserProfile();
 		userPlaylists = await SpotifyService.getUserPlaylists(userProfile.id);

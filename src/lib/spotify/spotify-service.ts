@@ -29,7 +29,6 @@ export class SpotifyService {
 	}
 
 	private static async getAccessToken(): Promise<string> {
-		// TODO: get this server side, don't exposes token client side if possible
 		let spotifyAuthResponse =
 			await localForage.getItem<SpotifyAuthResponse>('spotify_auth_response');
 
