@@ -20,6 +20,7 @@
 	let exportingPlaylists = false;
 	let totalPlaylists = 0;
 	let totalPlaylistsSelected = 0;
+	let totalPlaylistsExported = 0;
 	let userProfile: SpotifyUserProfile;
 	let userPlaylists: Partial<SpotifyUserPlaylistsResponse>;
 
@@ -55,6 +56,8 @@
 						? userPlaylistItems.items.map((item) => spotifyTrackToBackupTrack(item))
 						: []
 				});
+
+				totalPlaylistsExported++;
 			}
 
 			console.debug(`Fetched playlists!`);
@@ -78,7 +81,17 @@
 
 	function resetExportQueue(playlistsSelected: number): void {
 		totalPlaylistsSelected = playlistsSelected;
+		totalPlaylistsExported = 0;
 		doneExportingUserPlaylists = false;
+	}
+
+	function resetPlaylistExport(): void {
+		doneExportingUserPlaylists = false;
+		document.querySelectorAll('.play-list-card__checkbox').forEach((val) => {
+			(val as HTMLInputElement).checked = false;
+		});
+		totalPlaylistsSelected = 0;
+		totalPlaylistsExported = 0;
 	}
 
 	function downloadPlaylistExport(): void {
@@ -112,12 +125,14 @@
 		<UserPlaylists
 			{totalPlaylists}
 			{totalPlaylistsSelected}
+			{totalPlaylistsExported}
 			playlists={userPlaylists.items || []}
 			{doneExportingUserPlaylists}
 			{exportingPlaylists}
 			on:exportAllPlaylists={() => exportAllPlaylists(userPlaylists.items)}
 			on:exportSelectedPlaylists={(event) => exportSelectedPlaylists(event.detail)}
 			on:downloadPlaylistExport={() => downloadPlaylistExport()}
+			on:resetPlaylistExport={() => resetPlaylistExport()}
 			on:resetExportQueue={(event) => resetExportQueue(event.detail)}
 		/>
 	{/if}

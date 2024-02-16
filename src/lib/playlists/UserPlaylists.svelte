@@ -5,6 +5,7 @@
 
 	export let totalPlaylists: number;
 	export let totalPlaylistsSelected: number;
+	export let totalPlaylistsExported: number = 0;
 	export let playlists: SpotifyUserPlaylists[];
 	export let doneExportingUserPlaylists: boolean;
 	export let exportingPlaylists: boolean;
@@ -59,14 +60,24 @@
 
 	<section class="user-playlists__export-actions">
 		{#if doneExportingUserPlaylists}
-			<button type="button" on:click={() => handleDownloadPlaylistExportClick()}
-				>Download Playlists Export (.json)</button
-			>
+			<div class="user-playlists__export-dowload-buttons">
+				<button type="button" on:click={() => handleDownloadPlaylistExportClick()}
+					>Download Playlists Export (.json)</button
+				>
+				<button
+					type="button"
+					class="user-playlists__export-dowload-button--reset"
+					on:click={() => dispatch('resetPlaylistExport')}>Reset</button
+				>
+			</div>
 		{:else}
 			{#if exportingPlaylists}
-				<p>Exporting playlists from Spotify...</p>
+				<p>
+					Exporting playlists from Spotify...{totalPlaylistsExported}/{totalPlaylistsSelected ||
+						totalPlaylists}
+				</p>
 			{/if}
-			<section class="user-playlists__export-actions-buttons">
+			<section class="user-playlists__export-action-buttons">
 				<button
 					type="button"
 					on:click={() => handleExportAllPlaylistsClick()}
@@ -75,7 +86,7 @@
 				<button
 					type="button"
 					on:click={() => handleExportSelectedPlaylistsClick()}
-					disabled={exportingPlaylists}
+					disabled={exportingPlaylists || totalPlaylistsSelected === 0}
 					>Export Selected Playlists {totalPlaylistsSelected}/{totalPlaylists}</button
 				>
 			</section>
@@ -95,7 +106,8 @@
 	}
 
 	.user-playlists__playlists {
-		height: 100%;
+		height: calc(100% - 8px);
+		border: 4px solid #cbc4c4;
 		overflow-y: auto;
 		margin: 0;
 		padding: 0;
@@ -112,21 +124,38 @@
 		text-align: center;
 	}
 
-	.user-playlists__export-actions-buttons {
+	.user-playlists__export-action-buttons {
 		display: flex;
 		width: 100%;
 		justify-content: space-around;
 	}
 
+	.user-playlists__export-dowload-buttons {
+		display: flex;
+		width: 100%;
+		justify-content: space-around;
+	}
+
+	.user-playlists__export-dowload-button--reset {
+		background-color: #cbc4c4;
+		color: black;
+	}
+
 	.user-playlists__playlist-count {
-		font-size: 1.5em;
-		margin-bottom: 32px;
+		font-size: 1em;
+		margin: 8px;
 		span {
 			font-weight: bold;
 		}
 	}
 
+	.user-playlists__playlist-export-status {
+	}
+
 	button {
 		@include button;
+		width: 140px;
+		height: 50px;
+		padding: 8px;
 	}
 </style>

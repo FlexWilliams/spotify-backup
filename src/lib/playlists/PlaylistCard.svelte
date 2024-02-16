@@ -36,7 +36,7 @@
 	}
 
 	.playlist-card__playlist-name {
-		font-size: 1.25em;
+		font-size: 0.75em;
 		margin: 0;
 	}
 
