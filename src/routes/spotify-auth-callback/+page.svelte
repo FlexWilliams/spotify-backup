@@ -29,13 +29,12 @@
 		playlists: []
 	} as SpotifyBackupUserPlaylists;
 
-	async function exportAllPlaylists(
+	async function exportPlaylists(
 		playlists?: SpotifyUserPlaylists[]
 	): Promise<SpotifyBackupUserPlaylists> {
 		spotifyBackupUserPlaylists.userId = userProfile.id;
 		doneExportingUserPlaylists = false;
 		exportingPlaylists = true;
-		toggleCheckboxes(true);
 
 		return new Promise(async (resolve) => {
 			if (!playlists) {
@@ -77,7 +76,7 @@
 		const selectedPlaylists = userPlaylists.items?.filter(
 			(i) => selectedPlaylistIds.indexOf(i.id) > -1
 		);
-		await exportAllPlaylists(selectedPlaylists);
+		await exportPlaylists(selectedPlaylists);
 	}
 
 	function resetExportQueue(playlistsSelected: number): void {
@@ -109,6 +108,11 @@
 		a.click();
 	}
 
+	function exportAllPlaylists(): void {
+		toggleCheckboxes(true);
+		exportPlaylists(userPlaylists.items);
+	}
+
 	onMount(async () => {
 		await localForage.setItem<SpotifyAuthResponse>('spotify_auth_response', spotifyAuthResponse);
 		userProfile = await SpotifyService.getUserProfile();
@@ -134,7 +138,7 @@
 			playlists={userPlaylists.items || []}
 			{doneExportingUserPlaylists}
 			{exportingPlaylists}
-			on:exportAllPlaylists={() => exportAllPlaylists(userPlaylists.items)}
+			on:exportAllPlaylists={() => exportAllPlaylists()}
 			on:exportSelectedPlaylists={(event) => exportSelectedPlaylists(event.detail)}
 			on:downloadPlaylistExport={() => downloadPlaylistExport()}
 			on:resetPlaylistExport={() => resetPlaylistExport()}

@@ -40,6 +40,11 @@
 
 		dispatch('resetExportQueue', selectedPlaylistsForExport.length);
 	}
+
+	function handleReset(): void {
+		selectedPlaylistsForExport = [];
+		dispatch('resetPlaylistExport');
+	}
 </script>
 
 <section class="user-playlists">
@@ -67,7 +72,7 @@
 				<button
 					type="button"
 					class="user-playlists__export-dowload-button--reset"
-					on:click={() => dispatch('resetPlaylistExport')}>Reset</button
+					on:click={() => handleReset()}>Reset</button
 				>
 			</div>
 		{:else}
