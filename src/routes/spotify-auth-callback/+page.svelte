@@ -35,6 +35,7 @@
 		spotifyBackupUserPlaylists.userId = userProfile.id;
 		doneExportingUserPlaylists = false;
 		exportingPlaylists = true;
+		toggleCheckboxes(true);
 
 		return new Promise(async (resolve) => {
 			if (!playlists) {
@@ -87,11 +88,15 @@
 
 	function resetPlaylistExport(): void {
 		doneExportingUserPlaylists = false;
-		document.querySelectorAll('.play-list-card__checkbox').forEach((val) => {
-			(val as HTMLInputElement).checked = false;
-		});
+		toggleCheckboxes(false);
 		totalPlaylistsSelected = 0;
 		totalPlaylistsExported = 0;
+	}
+
+	function toggleCheckboxes(checked: boolean): void {
+		document.querySelectorAll('.play-list-card__checkbox').forEach((val) => {
+			(val as HTMLInputElement).checked = checked;
+		});
 	}
 
 	function downloadPlaylistExport(): void {

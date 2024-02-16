@@ -80,14 +80,14 @@
 			<section class="user-playlists__export-action-buttons">
 				<button
 					type="button"
-					on:click={() => handleExportAllPlaylistsClick()}
-					disabled={exportingPlaylists}>Export All Playlists</button
-				>
-				<button
-					type="button"
 					on:click={() => handleExportSelectedPlaylistsClick()}
 					disabled={exportingPlaylists || totalPlaylistsSelected === 0}
 					>Export Selected Playlists {totalPlaylistsSelected}/{totalPlaylists}</button
+				>
+				<button
+					type="button"
+					on:click={() => handleExportAllPlaylistsClick()}
+					disabled={exportingPlaylists}>Export All Playlists</button
 				>
 			</section>
 		{/if}
